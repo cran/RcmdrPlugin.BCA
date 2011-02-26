@@ -1,0 +1,17 @@
+Version 0.1-2
+
+ o Put back in the color palette selection tool
+ 
+Version 0.1-1
+
+ o Completely re-did the pull-down menu structure to flow better with the book
+ 
+ o Added the SD index for cluster validation as a guide to determining the
+   number of clusters in a K-Means clustering solution
+
+Version 0.0-1
+
+ o Initial version based on the conversion of custom Rcmdr build 1.2-91
+ 
+ o Small changes to the lift chart plots and the lift chart dialog box
+
