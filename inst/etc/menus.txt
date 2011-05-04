@@ -429,7 +429,7 @@
   menu   assessMenu       topMenu         ""                                         ""                          ""             ""
   item   assessMenu       command         "Select active model..."                   selectActiveModel           "modelsP()"    ""
   item   assessMenu       command         "Summarize model"                          summarizeModelBCA           "activeModelP()"   ""
-  item   assessMenu       command         "Add observation statistics to data..."    addObservationStatistics    "activeModelP()"   ""
+#  item   assessMenu       command         "Add observation statistics to data..."    addObservationStatistics    "activeModelP()"   ""
   item   assessMenu       command         "Confidence intervals..."                  confidenceIntervals         "activeModelP()"   "packageAvailable('MASS')"
   item   assessMenu       command         "Akaike Information Criterion (AIC)"       aic                         "activeModelP()"   ""
   item   assessMenu       command         "Bayesian Information Criterion (BIC)"     bic                         "activeModelP()"   ""
@@ -465,10 +465,12 @@
 ## The Score menu
 ##
   menu   scoreMenu        topMenu         ""                                         ""                          ""             ""
-  item   scoreMenu        command         "Score a database..."                      scoreGUI                    "activeModelP() && liftChartP()"  ""
+  item   scoreMenu        command         "Rank order..."                            rankScoreGUI                "activeModelP() && liftChartP()" ""
+  item   scoreMenu        command         "Sample estimated probability..."          rawProbScoreGUI             "activeModelP() && liftChartP()" ""
+  item   scoreMenu        command         "Adjusted estimated probability..."        adjProbScoreGUI             "activeModelP() && liftChartP()" ""
   item   topMenu          cascade         "Score"                                    scoreMenu                   ""             ""
 ##
-## The Help menu addition
+## The Help menu additions
 ##
   item   helpMenu         command         "About the BCA plug-in"                    helpAboutBCA                ""             ""
   item   helpMenu         command         "Start R help system"                      startHelp                   ""             ""

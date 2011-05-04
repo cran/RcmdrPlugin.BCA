@@ -1168,56 +1168,37 @@ rpartModel <- function(){
 
 rpartPlot <- function(){
     require("rpart")
+    require("rpart.plot")
     rpartMod <- ActiveModel()
     initializeDialog(title=gettextRcmdr("Plot an rpart Tree"))
+    leafFrame <- tkframe(top)
+    radioButtons(name="leaf", buttons=c("counts", "proportions"), 
+      labels=gettextRcmdr(c("Counts", "Proportions")), title=gettextRcmdr("Leaf Summary"))
     optionsFrame <- tkframe(top)
     uniform <- tclVar("1")
     uniformCB <- tkcheckbutton(optionsFrame)
     tkconfigure(uniformCB, variable=uniform)
-    allNodes <- tclVar("1")
-    allNodesCB <- tkcheckbutton(optionsFrame)
-    tkconfigure(allNodesCB, variable=allNodes)
-    textScale <- tclVar("0.8")
-    splitNum <- tclVar("1")
-    splitNumCB <- tkcheckbutton(optionsFrame)
-    tkconfigure(splitNumCB, variable=splitNum)
-    textScale <- tclVar("0.8")
-    slider <- tkscale(optionsFrame, from=0.1, to=1, showvalue=TRUE,
-      variable=textScale, resolution=0.1, orient="horizontal")
     onOK <- function(){
+        leafSum <- tclvalue(leafVariable)
         uniformOp <- tclvalue(uniform)
-        allNodesOp <- tclvalue(allNodes)
-        splitNumOp <- tclvalue(splitNum)
-        txtScale <- as.numeric(tclvalue(textScale))
         closeDialog()
-        sclStr <- paste("cex = ", txtScale, ")", sep="")
-        if(uniformOp == 1) uniformStr <- ", uniform = TRUE)"
-        else uniformStr <- ", uniform = FALSE)"
-        if(allNodesOp == 1) allStr <- "all = TRUE,"
-        else allStr <- "all = FALSE,"
-        if(splitNumOp == 1) numStr <- ", use.n = TRUE,"
-        else numStr <- ", use.n = FALSE,"
-        plotCom <- paste("plot(", rpartMod, uniformStr, sep="")
-        textCom <- paste("text(", rpartMod, numStr, allStr, sclStr, sep="")
+        if(uniformOp == 1) uniformStr <- ", uniform = TRUE, fallen.leaves = FALSE)"
+        else uniformStr <- ", uniform = FALSE, fallen.leaves = TRUE)"
+        if(leafSum == "counts") leafStr <- "extra = 2"
+        else leafStr <- "extra = 4"
+        plotCom <- paste("rpart.plot(", rpartMod, ", type = 0, ", leafStr, uniformStr, sep="")
         logger(plotCom)
         justDoIt(plotCom)
-        logger(textCom)
-        justDoIt(textCom)
         activateMenus()
         tkfocus(CommanderWindow())
         } 
-    OKCancelHelp(helpSubject="rpartPlot")
+    OKCancelHelp(helpSubject="rpart.plot")
+    tkgrid(leafFrame, sticky="w")
     tkgrid(tklabel(optionsFrame, 
       text=gettextRcmdr("Uniform branch distances")), uniformCB, sticky="w")
-    tkgrid(tklabel(optionsFrame, 
-      text=gettextRcmdr("Label all nodes")), allNodesCB, sticky="w")
-    tkgrid(tklabel(optionsFrame, 
-      text=gettextRcmdr("Print numeric leaf splits")), splitNumCB, sticky="w")
-    tkgrid(tklabel(optionsFrame, text=gettextRcmdr("Text size scale:")),
-      slider, sticky="sw")
     tkgrid(optionsFrame, sticky="w")
     tkgrid(buttonsFrame, columnspan=2, sticky="w")
-    dialogSuffix(rows=5, columns=2)
+    dialogSuffix(rows=4, columns=2)
     }
 
 # MODELS MENU
@@ -1475,7 +1456,7 @@ liftChartP <- function() {
     return(test)
     }
 
-scoreGUI <- function() {
+rankScoreGUI <- function() {
     require("nnet")
     require("rpart")
     require("BCA")
@@ -1505,7 +1486,7 @@ scoreGUI <- function() {
         }
     else {validOtherObjects <- character(0)}
     validModelObjects <- c(validGlmObjects, validOtherObjects)
-    initializeDialog(title="Score a Data Set")
+    initializeDialog(title="Rank Order Records Based on Expected Response")
     modelBox <- variableListBox(top, validModelObjects, selectmode="single",
       title=gettextRcmdr("Select a Single Model"))
     dataSetBox <- variableListBox(top, listDataSets(), selectmode="single",
@@ -1524,34 +1505,213 @@ scoreGUI <- function() {
         varLabel <- tclvalue(varName)
         closeDialog()
         if(length(modObj)==0) {
-            errorCondition(recall=scoreGUI, 
+            errorCondition(recall=rankScoreGUI, 
               message=gettextRcmdr("No model has been selected."))
             return()
             }
         if(length(dataSet)==0) {
-            errorCondition(recall=scoreGUI, 
+            errorCondition(recall=rankScoreGUI, 
               message=gettextRcmdr("No data set to score has been selected."))
             return()
             }
         if(targLabel=="") {
-            errorCondition(recall=scoreGUI, 
+            errorCondition(recall=rankScoreGUI, 
               message=gettextRcmdr("A target level label must be provided."))
             return()
             }
         if (!is.valid.name(varLabel)){
-            errorCondition(recall=scoreGUI, message=
+            errorCondition(recall=rankScoreGUI, message=
 	      paste('"', varLabel, '" ',
                   gettextRcmdr("is not a valid name."), sep=""))
             return()
             }
         c1 <- paste('"', modObj, '", ', dataSet, ', "', targLabel,'"', sep="")
-        command <- paste(dataSet, "$", varLabel, " <- score(", c1, ")", sep="")
+        command <- paste(dataSet, "$", varLabel, " <- rankScore(", c1, ")", sep="")
         justDoIt(command)
         logger(command)
         tkfocus(CommanderWindow())
         }
-    OKCancelHelp(helpSubject="ls")
+    OKCancelHelp(helpSubject="score")
     tkgrid(getFrame(modelBox), getFrame(dataSetBox), sticky="nw")
+    tkgrid(tklabel(targetFrame, text=gettextRcmdr("Target Level:")),
+      targLevelField, sticky="w")
+    tkgrid(tklabel(varNameFrame, text=gettextRcmdr("Score Variable Name: ")),
+      varNameField, sticky="w")
+    tkgrid(targetFrame, varNameFrame, sticky="w")
+    tkgrid(buttonsFrame, columnspan=2, sticky="w")
+    dialogSuffix(rows=2, columns=2)
+    return(invisible())
+    }
+
+rawProbScoreGUI <- function() {
+    require("nnet")
+    require("rpart")
+    require("BCA")
+    parseDataSetGlm <- function(x) {
+        y <- eval(parse(text=paste(x, "$call", sep="")))
+        out <- unlist(strsplit(as.character(y), "="))[4]
+        return(out)
+        }
+    parseDataSetOther <- function(x) {
+        y <- eval(parse(text=paste(x, "$call", sep="")))
+        out <- unlist(strsplit(as.character(y), "="))[3]
+        return(out)
+        }
+    .activeDataSet <- ActiveDataSet()
+    if(length(listGeneralizedLinearModels()>0)) {
+        glmObjects <- listGeneralizedLinearModels()
+        testDataSetGlm <- tapply(glmObjects, as.factor(1:length(glmObjects)),
+          parseDataSetGlm)
+        validGlmObjects <- glmObjects[testDataSetGlm==.activeDataSet]
+        }
+    else {validGlmObjects <- character(0)}
+    if(length(listRpartModels()) > 0 | length(listNnetModels()) > 0) {
+        otherObjects <- c(listRpartModels(), listNnetModels())
+        testDataSetOther <- tapply(otherObjects,
+          as.factor(1:length(otherObjects)), parseDataSetOther)
+        validOtherObjects <- otherObjects[testDataSetOther==.activeDataSet]
+        }
+    else {validOtherObjects <- character(0)}
+    validModelObjects <- c(validGlmObjects, validOtherObjects)
+    initializeDialog(title="Score Records Based on Sample Probabilities")
+    modelBox <- variableListBox(top, validModelObjects, selectmode="single",
+      title=gettextRcmdr("Select a Single Model"))
+    dataSetBox <- variableListBox(top, listDataSets(), selectmode="single",
+      title=gettextRcmdr("Select a Single Data Set"))
+    targetFrame <- tkframe(top)
+    if(is.null(getRcmdr(".targetLevel"))) targLevel <- tclVar("")
+    else targLevel <- tclVar(getRcmdr(".targetLevel"))
+    targLevelField <- tkentry(targetFrame, width="10", textvariable=targLevel)
+    varNameFrame<-tkframe(top)
+    varName <- tclVar("Score")
+    varNameField <- tkentry(varNameFrame, width="10", textvariable=varName)
+    onOK <- function() {
+        modObj <- getSelection(modelBox)
+        dataSet <- getSelection(dataSetBox)
+        targLabel <- tclvalue(targLevel)
+        varLabel <- tclvalue(varName)
+        closeDialog()
+        if(length(modObj)==0) {
+            errorCondition(recall=rawProbScoreGUI, 
+              message=gettextRcmdr("No model has been selected."))
+            return()
+            }
+        if(length(dataSet)==0) {
+            errorCondition(recall=rawProbScoreGUI, 
+              message=gettextRcmdr("No data set to score has been selected."))
+            return()
+            }
+        if(targLabel=="") {
+            errorCondition(recall=rawProbScoreGUI, 
+              message=gettextRcmdr("A target level label must be provided."))
+            return()
+            }
+        if (!is.valid.name(varLabel)){
+            errorCondition(recall=rawProbScoreGUI, message=
+	      paste('"', varLabel, '" ',
+                  gettextRcmdr("is not a valid name."), sep=""))
+            return()
+            }
+        c1 <- paste('"', modObj, '", ', dataSet, ', "', targLabel,'"', sep="")
+        command <- paste(dataSet, "$", varLabel, " <- rawProbScore(", c1, ")", sep="")
+        justDoIt(command)
+        logger(command)
+        tkfocus(CommanderWindow())
+        }
+    OKCancelHelp(helpSubject="score")
+    tkgrid(getFrame(modelBox), getFrame(dataSetBox), sticky="nw")
+    tkgrid(tklabel(targetFrame, text=gettextRcmdr("Target Level:")),
+      targLevelField, sticky="w")
+    tkgrid(tklabel(varNameFrame, text=gettextRcmdr("Score Variable Name: ")),
+      varNameField, sticky="w")
+    tkgrid(targetFrame, varNameFrame, sticky="w")
+    tkgrid(buttonsFrame, columnspan=2, sticky="w")
+    dialogSuffix(rows=2, columns=2)
+    return(invisible())
+    }
+
+adjProbScoreGUI <- function() {
+    require("nnet")
+    require("rpart")
+    require("BCA")
+    parseDataSetGlm <- function(x) {
+        y <- eval(parse(text=paste(x, "$call", sep="")))
+        out <- unlist(strsplit(as.character(y), "="))[4]
+        return(out)
+        }
+    parseDataSetOther <- function(x) {
+        y <- eval(parse(text=paste(x, "$call", sep="")))
+        out <- unlist(strsplit(as.character(y), "="))[3]
+        return(out)
+        }
+    .activeDataSet <- ActiveDataSet()
+    if(length(listGeneralizedLinearModels()>0)) {
+        glmObjects <- listGeneralizedLinearModels()
+        testDataSetGlm <- tapply(glmObjects, as.factor(1:length(glmObjects)),
+          parseDataSetGlm)
+        validGlmObjects <- glmObjects[testDataSetGlm==.activeDataSet]
+        }
+    else {validGlmObjects <- character(0)}
+    if(length(listRpartModels()) > 0 | length(listNnetModels()) > 0) {
+        otherObjects <- c(listRpartModels(), listNnetModels())
+        testDataSetOther <- tapply(otherObjects,
+          as.factor(1:length(otherObjects)), parseDataSetOther)
+        validOtherObjects <- otherObjects[testDataSetOther==.activeDataSet]
+        }
+    else {validOtherObjects <- character(0)}
+    validModelObjects <- c(validGlmObjects, validOtherObjects)
+    initializeDialog(title="Score Records Based on Adjusted Probabilities")
+    modelBox <- variableListBox(top, validModelObjects, selectmode="single",
+      title=gettextRcmdr("Select a Single Model"))
+    dataSetBox <- variableListBox(top, listDataSets(), selectmode="single",
+      title=gettextRcmdr("Select a Single Data Set"))
+    targetFrame <- tkframe(top)
+    trueResp <- tclVar("")
+    trueRespField <- tkentry(targetFrame, width="6", textvariable=trueResp)
+    if(is.null(getRcmdr(".targetLevel"))) targLevel <- tclVar("")
+    else targLevel <- tclVar(getRcmdr(".targetLevel"))
+    targLevelField <- tkentry(targetFrame, width="10", textvariable=targLevel)
+    varNameFrame<-tkframe(top)
+    varName <- tclVar("Score")
+    varNameField <- tkentry(varNameFrame, width="10", textvariable=varName)
+    onOK <- function() {
+        modObj <- getSelection(modelBox)
+        dataSet <- getSelection(dataSetBox)
+        trueRespRate <- tclvalue(trueResp)
+        targLabel <- tclvalue(targLevel)
+        varLabel <- tclvalue(varName)
+        closeDialog()
+        if(length(modObj)==0) {
+            errorCondition(recall=adjProbScoreGUI, 
+              message=gettextRcmdr("No model has been selected."))
+            return()
+            }
+        if(length(dataSet)==0) {
+            errorCondition(recall=adjProbScoreGUI, 
+              message=gettextRcmdr("No data set to score has been selected."))
+            return()
+            }
+        if(targLabel=="") {
+            errorCondition(recall=adjProbScoreGUI, 
+              message=gettextRcmdr("A target level label must be provided."))
+            return()
+            }
+        if (!is.valid.name(varLabel)){
+            errorCondition(recall=adjProbScoreGUI, message=
+	      paste('"', varLabel, '" ',
+                  gettextRcmdr("is not a valid name."), sep=""))
+            return()
+            }
+        c1 <- paste('"', modObj, '", ', dataSet, ', "', targLabel,'", ', trueRespRate, sep="")
+        command <- paste(dataSet, "$", varLabel, " <- adjProbScore(", c1, ")", sep="")
+        justDoIt(command)
+        logger(command)
+        tkfocus(CommanderWindow())
+        }
+    OKCancelHelp(helpSubject="score")
+    tkgrid(getFrame(modelBox), getFrame(dataSetBox), sticky="nw")
+    tkgrid(tklabel(targetFrame, text=gettextRcmdr("True Response Rate: ")),
+      trueRespField, sticky="w")
     tkgrid(tklabel(targetFrame, text=gettextRcmdr("Target Level:")),
       targLevelField, sticky="w")
     tkgrid(tklabel(varNameFrame, text=gettextRcmdr("Score Variable Name: ")),

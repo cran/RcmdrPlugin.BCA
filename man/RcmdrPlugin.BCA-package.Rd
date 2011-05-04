@@ -12,11 +12,12 @@ and Robert E. Krider.
 }
 \details{
 Package:  Rcmdr.BCA\cr
-Version:  0.1-3\cr
+Version:  0.1-4\cr
 Date:  2011/02/24\cr
 Depends: R (>= 2.1.0), Rcmdr (>= 1.6-0), tcltk, grDevices, utils\cr
 Suggests: bind, aplpack, car (>= 1.1-1), clv, effects (>= 1.0-7), foreign, grid, 
-  lattice, lmtest, MASS, mgcv, multcomp, nlme, nnet, relimp, rpart, rgl, RODBC\cr
+  lattice, lmtest, MASS, mgcv, multcomp, nlme, nnet, relimp, rpart, rpart.plot,
+  rgl, RODBC\cr
 LazyLoad: no\cr
 License: GPL (>= 2)\cr
 URL: http://www.r-project.org,

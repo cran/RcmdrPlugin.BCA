@@ -21,9 +21,12 @@
 \alias{relabelFactor}
 \alias{rpartModel}
 \alias{rpartP}
+\alias{rpartPlot}
 \alias{scatterPlotBCA}
 \alias{scatterPlotMatrixBCA}
-\alias{scoreGUI}
+\alias{rankScoreGUI}
+\alias{rawProbScoreGUI}
+\alias{adjProbScoreGUI}
 \alias{stepwiseBCA}
 \alias{subsetBoxBCA}
 \alias{summarizeModelBCA}
@@ -56,10 +59,13 @@ nnetModel()
 nnetP()
 relabelFactor()
 rpartModel()
+rpartPlot()
 rpartP()
 scatterPlotBCA()
 scatterPlotMatrixBCA()
-scoreGUI()
+rankScoreGUI()
+rawProbScoreGUI()
+adjProbScoreGUI()
 stepwiseBCA()
 subsetBoxBCA(window = top, model = FALSE)
 summarizeModelBCA()
