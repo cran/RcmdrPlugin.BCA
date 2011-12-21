@@ -519,7 +519,7 @@ kcentroidsClustering <- function(){
     assignName <- tclVar("KCentroids")
     assignField <- tkentry(assignFrame, width="15",
       textvariable=assignName)
-    radioButtons(name="method", buttons=c("kmn", "kmd", "ng"),
+    radioButtons(name="method", buttons=c("kmn", "kmd", "neuralgas"),
       labels=gettextRcmdr(c("K-Means", "K-Medians", "Neural Gas")),
       title=gettextRcmdr("Clustering Method"))
     optionsFrame <- tkframe(top)
@@ -595,7 +595,7 @@ kcentroidsClustering <- function(){
         if(clusMethod == "kmd") {
             details <- 'FUN = kcca, family = kccaFamily("kmedians")'
             }
-        else if(clusMethod == "ng") {
+        else if(clusMethod == "neuralgas") {
             details <- 'FUN = cclust, dist = "euclidean", method = "neuralgas"'
             }
         command <- paste("stepFlexclust(", xmat, ", k = ", nClusters,
@@ -684,7 +684,7 @@ bootDiagnostics <- function(){
     xBox <- variableListBox(dataFrame, Numeric(), selectmode="multiple",
       title=gettextRcmdr("Variables (pick one or more)"))
     subsetBoxBCA(dataFrame)
-    radioButtons(name="method", buttons=c("kmn", "kmd", "ng"),
+    radioButtons(name="method", buttons=c("kmn", "kmd", "neuralgas"),
       labels=gettextRcmdr(c("K-Means", "K-Medians", "Neural Gas")),
       title=gettextRcmdr("Clustering Method"))
     optionsFrame <- tkframe(top)
@@ -732,7 +732,7 @@ bootDiagnostics <- function(){
         if(clusMethod == "kmd") {
             details <- 'FUN = kcca, family = kccaFamily("kmedians")'
             }
-        else if(clusMethod == "ng") {
+        else if(clusMethod == "neuralgas") {
             details <- 'FUN = cclust, dist = "euclidean", method = "neuralgas"'
             }
         command <- paste("bootCVD(", xmat, ", k = ", minClus, ":", maxClus,
