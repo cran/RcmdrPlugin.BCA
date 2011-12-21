@@ -1,5 +1,6 @@
 \name{RcmdrPlugin.BCA.Utilities}
 \alias{RcmdrPlugin.BCA.Utilities}
+\alias{bootDiagnostics}
 \alias{SDIndexPlot}
 \alias{activeRpartP}
 \alias{createSamples}
@@ -11,6 +12,7 @@
 \alias{importDBF}
 \alias{is.equality.prob}
 \alias{kmeansClusteringBCA}
+\alias{kcentroidsClustering}
 \alias{liftChart}
 \alias{liftChartP}
 \alias{listHclustSolutions}
@@ -39,6 +41,7 @@
 }
 
 \usage{
+bootDiagnostics()
 SDIndexPlot()
 activeRpartP()
 createSamples()

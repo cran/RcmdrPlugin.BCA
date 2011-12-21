@@ -385,8 +385,10 @@
 #  menu   clusterMenu      grpRecMenu      ""                                         ""                          ""             ""
 #  menu   assocRulesMenu   grpRecMenu      ""                                         ""                          ""             ""
 ## Note: for now put in the Group Records menu, at some point it will be in the Cluster Analysis sub-menu
-  item   grpRecMenu       command         "k-means cluster analysis..."              kmeansClusteringBCA         "numericP() && packageAvailable('rgl')"   ""
-  item   grpRecMenu       command         "SD Index for different numbers of k-means clusters..."   SDIndexPlot                 "numericP()"   "packageAvailable('clv')"
+#  item   grpRecMenu       command         "k-means cluster analysis..."              kmeansClusteringBCA         "numericP() && packageAvailable('rgl')"   ""
+  item   grpRecMenu       command         "k-centroids cluster analysis..."           kcentroidsClustering        "numericP() && packageAvailable('rgl') && packageAvailable('flexclust')"   ""
+#  item   grpRecMenu       command         "SD Index for different numbers of k-means clusters..."   SDIndexPlot                 "numericP()"   "packageAvailable('clv')"
+  item   grpRecMenu       command         "k-centroids clustering diagnostics..."    bootDiagnostics             "numericP()"   "packageAvailable('flexclust')"
   item   grpRecMenu       command         "Hierarchical cluster analysis..."         hierarchicalCluster         "numericP()"   ""
   item   grpRecMenu       command         "Summarize hierarchical clustering..."     hclustSummaryBCA            "hclustSolutionsP()"  ""
   item   grpRecMenu       command         "Add hierarchical clustering to data set..."  appendHclustGroup        "hclustSolutionsP()"  ""
