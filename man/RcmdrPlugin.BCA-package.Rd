@@ -7,14 +7,14 @@ RcmdrPlugin.BCA
 }
 \description{
 An R Commander plug-in to accompany the book 
-\cite{Customer and Business Analytics: A Hands on Approach} by Daniel S. Putler 
+\cite{Customer and Business Analytics: Applied Data Mining for Business Decision Making Using R} by Daniel S. Putler 
 and Robert E. Krider.
 }
 \details{
-Package:  Rcmdr.BCA\cr
-Version:  0.1-4\cr
-Date:  2011/02/24\cr
-Depends: R (>= 2.1.0), Rcmdr (>= 1.6-0), tcltk, grDevices, utils\cr
+Package:  RcmdrPlugin.BCA\cr
+Version:  0.9-3\cr
+Date:  2012/01/28\cr
+Depends: R (>= 2.1.0), Rcmdr (>= 1.6-0), tcltk, BCA\cr
 Suggests: bind, aplpack, car (>= 1.1-1), clv, effects (>= 1.0-7), foreign, grid, 
   lattice, lmtest, MASS, mgcv, multcomp, nlme, nnet, relimp, rpart, rpart.plot,
   rgl, RODBC\cr

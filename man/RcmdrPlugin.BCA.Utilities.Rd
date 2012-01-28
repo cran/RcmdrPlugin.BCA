@@ -24,8 +24,6 @@
 \alias{rpartModel}
 \alias{rpartP}
 \alias{rpartPlot}
-\alias{scatterPlotBCA}
-\alias{scatterPlotMatrixBCA}
 \alias{rankScoreGUI}
 \alias{rawProbScoreGUI}
 \alias{adjProbScoreGUI}
@@ -64,8 +62,6 @@ relabelFactor()
 rpartModel()
 rpartPlot()
 rpartP()
-scatterPlotBCA()
-scatterPlotMatrixBCA()
 rankScoreGUI()
 rawProbScoreGUI()
 adjProbScoreGUI()
