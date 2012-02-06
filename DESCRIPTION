@@ -1,11 +1,11 @@
 Package: RcmdrPlugin.BCA
 Type: Package
 Title: Rcmdr Plug-In for Business and Customer Analytics
-Version: 0.9-3
-Date: 2012-01-28
+Version: 0.9-4
+Date: 2012-02-06
 Author: Dan Putler <putler@yahoo.com>
 Maintainer: Dan Putler <putler@yahoo.com>
-Depends: Rcmdr (>= 1.6-0), tcltk, BCA (>= 0.9-1)
+Depends: Rcmdr (>= 1.6-0), tcltk, BCA (>= 0.9-1), car (>= 2.0-12)
 Suggests: rgl, foreign, rpart, rpart.plot, nnet
 Description: This package provides an Rcmdr "plug-in" to accompany the
         book Customer and Business Analytics: Applied Data Mining for
@@ -14,6 +14,6 @@ Description: This package provides an Rcmdr "plug-in" to accompany the
 License: GPL (>= 2)
 URL: http://www.customeranalyticsbook.com
 Models: nnet.formula, rpart
-Packaged: 2012-01-28 20:06:15 UTC; dputler
+Packaged: 2012-02-06 19:58:58 UTC; dputler
 Repository: CRAN
-Date/Publication: 2012-01-29 07:48:40
+Date/Publication: 2012-02-07 08:43:56

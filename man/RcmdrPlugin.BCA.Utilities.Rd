@@ -32,6 +32,8 @@
 \alias{summarizeModelBCA}
 \alias{variableSummary}
 \alias{variablesP}
+\alias{scatterPlotBCA}
+\alias{scatterPlotMatrixBCA}
 
 \title{RcmdrPlugin.BCA Utility Functions}
 \description{
@@ -70,6 +72,8 @@ subsetBoxBCA(window = top, model = FALSE)
 summarizeModelBCA()
 variableSummary()
 variablesP(n = 1)
+scatterPlotBCA()
+scatterPlotMatrixBCA()
 }
 
 \arguments{

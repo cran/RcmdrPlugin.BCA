@@ -1,6 +1,6 @@
 # RcmdrPlugin.BCA altered R Commander menus
 
-# last modified: 28Jan12 by Dan Putler
+# last modified: 06Feb12 by Dan Putler
 
 #   type    menu/item      operation/parent  label                              command/menu                activation    install?
 # Remove all the current Statistics related menus
@@ -329,8 +329,8 @@
   item   visualizeMenu    command         "Plot of means..."                         PlotMeans                   "numericP() && factorsP()"   ""
   item   visualizeMenu    command         "Pie chart..."                             pieChart                    "factorsP()"   "packageAvailable('colorspace')"
   item   visualizeMenu    command         "Quantile-comparison plot..."              QQPlot                      "numericP()"   "packageAvailable('car')"
-  item   visualizeMenu    command         "Scatterplot..."                           scatterPlot                 "numericP(2)"  "packageAvailable('car')"
-  item   visualizeMenu    command         "Scatterplot matrix..."                    scatterPlotMatrix           "numericP(3)"   "packageAvailable('car')"
+  item   visualizeMenu    command         "Scatterplot..."                           scatterPlotBCA              "numericP(2)"  "packageAvailable('car')"
+  item   visualizeMenu    command         "Scatterplot matrix..."                    scatterPlotMatrixBCA        "numericP(3)"  "packageAvailable('car')"
   item   visualizeMenu    command         "Boxplot..."                               boxPlot                     "numericP()"   ""
   item   visualizeMenu    command         "Stem-and-leaf display..."                 stemAndLeaf                 "numericP()"  "packageAvailable('aplpack')"
   item   visualizeMenu    command         "XY conditioning plot..."                  Xyplot                      "numericP(2)"  ""
