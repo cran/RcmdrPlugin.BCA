@@ -12,10 +12,11 @@ and Robert E. Krider.
 }
 \details{
 Package:  RcmdrPlugin.BCA\cr
-Version:  0.9-3\cr
-Date:  2012/01/28\cr
-Depends: R (>= 2.1.0), Rcmdr (>= 1.6-0), tcltk, BCA\cr
-Suggests: bind, aplpack, car (>= 1.1-1), clv, effects (>= 1.0-7), foreign, grid, 
+Version:  0.9-5\cr
+Date:  2013/02/27\cr
+Depends: R (>= 2.15.2), BCA, car\cr
+Imports: Rcmdr (>= 1.9-4), tcltk\cr
+Suggests: bind, aplpack, clv (>- 2.0-15, effects (>= 1.0-7), foreign, grid, 
   lattice, lmtest, MASS, mgcv, multcomp, nlme, nnet, relimp, rpart, rpart.plot,
   rgl, RODBC\cr
 LazyLoad: no\cr

@@ -1,28 +1,9 @@
 # Created on 26Sep10 by Dan Putler
-# Last modified on 06Feb12 by Dan Putler
+# Last modified on 28Feb13 by Dan Putler
 
 # .onAttach function to place .subset, .targetLevel, and .trueResp into the
 # Rcmdr environment. Hopefully this works. This is done to deal with R2.14.0
 .onAttach <- function(libname, pkgname){
-    if (!interactive()) return()
-    Rcmdr <- options()$Rcmdr
-    plugins <- Rcmdr$plugins
-    if ((!pkgname %in% plugins) && !getRcmdr("autoRestart")) {
-        Rcmdr$plugins <- c(plugins, pkgname)
-        options(Rcmdr=Rcmdr)
-        closeCommander(ask=FALSE, ask.save=TRUE)
-        putRcmdr(".subset", gettextRcmdr("<all valid cases>"))
-        putRcmdr(".Sample", NULL)
-        putRcmdr(".targetLevel", NULL)
-        putRcmdr(".trueResp", NULL)
-        Commander()
-        }
-    palette(c("#0072B2","#D55E00","#000000","#F0E442","#2B9F78","#E69F00","#5684E9","#CC79A7"))
-    }
-
-# .First.lib function to place .subset, .targetLevel, and .trueResp into the
-# Rcmdr environment. Hopefully this works.
-.First.lib <- function(libname, pkgname){
     if (!interactive()) return()
     Rcmdr <- options()$Rcmdr
     plugins <- Rcmdr$plugins
@@ -94,9 +75,8 @@ importDBF <- function() {
             }
         factor <- tclvalue(asFactor) == "1"
         command <- paste('read.dbf("', file,'", as.is=', factor,')', sep="")
-        logger(paste(dsnameValue, " <- ", command, sep=""))
-        assign(dsnameValue, justDoIt(command), envir=.GlobalEnv)
-        activeDataSet(dsnameValue)
+ 	    doItAndPrint(paste(dsnameValue, "<-", command))
+		activeDataSet(dsnameValue)
         tkfocus(CommanderWindow())
         }
     OKCancelHelp(helpSubject="read.dbf")
@@ -353,8 +333,7 @@ kmeansClusteringBCA <- function(){
           sep="")
         command <- paste("KMeans(", xmat, ", centers = ", nClusters,
           ", iter.max = ", iters, ", num.seeds = ", seeds, ")", sep="")
-        assign(".cluster", justDoIt(command), envir=.GlobalEnv)
-        logger(paste(".cluster <- ", command, sep=""))
+ 	    doItAndPrint(paste(".cluster", "<-", command))
         if (clusterSummary == "1") {
             doItAndPrint(paste(".cluster$size # Cluster Sizes"))
             doItAndPrint(paste(".cluster$centers # Cluster Centroids"))
@@ -600,8 +579,7 @@ kcentroidsClustering <- function(){
             }
         command <- paste("stepFlexclust(", xmat, ", k = ", nClusters,
           ", nrep = ", seeds, ", ", details, ")", sep="")
-        assign(".cluster", justDoIt(command), envir=.GlobalEnv)
-        logger(paste(".cluster <- ", command, sep=""))
+ 	    doItAndPrint(paste(".cluster", "<-", command))
         if (clusterSummary == "1") {
             doItAndPrint("summary(.cluster)")
             doItAndPrint("print(.cluster@centers) # Cluster Centroids")
@@ -835,9 +813,8 @@ hCluster <- function(){
         }
         command <- paste("hclust(", dx, " , method= ", '"', clusMethod, '"',
           ")", sep="")
-        assign(solution, justDoIt(command), envir=.GlobalEnv)
-        logger(paste(solution, " <- ", command, sep=""))
-        if (dendro == "1") {
+  	    doItAndPrint(paste(solution, "<-", command))
+       if (dendro == "1") {
             justDoIt(paste("plot(", solution, ", main= ",'"',
               "Cluster Dendrogram for Solution ", solution, '"', ", xlab= ",
               '"',"Observation Number in Data Set ", dset, '"',
@@ -911,6 +888,7 @@ hclustSummaryBCA <- function(){
     plotPtsCB <- tkcheckbutton(plotFrame)
     tkconfigure(plotPtsCB, variable=plotPts)
     plotCnt <- tclVar("0")
+
 
 
     plotCntCB <- tkcheckbutton(plotFrame)
@@ -1110,8 +1088,7 @@ generalizedLinearModelBCA <- function(){
             }
         command <- paste("glm(", formula, ", family=", family, "(", link,
             "), data=", ActiveDataSet(), subset, ")", sep="")
-        logger(paste(modelValue, " <- ", command, sep=""))
-        assign(modelValue, justDoIt(command), envir=.GlobalEnv)
+ 	    doItAndPrint(paste(modelValue, "<-", command))
         doItAndPrint(paste("summary(", modelValue, ")", sep=""))
         # The McFadden R^2 computation added by Dan Putler 29Sep06
         doItAndPrint(paste("1 - (", modelValue, "$deviance/",
@@ -1264,8 +1241,7 @@ nnetModel <- function(){
             command <- paste("Nnet(", formula, ", data=", .activeDataSet, 
               ", decay=", decayVal, ", size=", sizeNum, subset, ")", sep="")
             }
-        logger(paste(modelValue, " <- ", command, sep=""))
-        assign(modelValue, justDoIt(command), envir=.GlobalEnv)
+ 	    doItAndPrint(paste(modelValue, "<-", command))
         doItAndPrint(paste(modelValue,"$value # Final Objective Function Value",
           sep=""))
         doItAndPrint(paste("summary(", modelValue, ")", sep=""))
@@ -1391,31 +1367,16 @@ rpartModel <- function(){
         prunePlot <- tclvalue(plotPrune)
         command <- paste("rpart(", formula, ", data=", .activeDataSet, 
           ", cp=" , complexPar, subset,")", sep="")
-#        if(subset=="") {
-#            command <- paste("rpart(", formula, ", data=", .activeDataSet, 
-#              ", cp=" , complexPar, ")", sep="")
-#            }
-#        else {
-#            command <- paste("rpart(", formula, ", data=", .activeDataSet, 
-#              subset, ", cp=" , complexPar, ")", sep="")
-#            }
-        logger(paste(modelValue, " <- ", command, sep=""))
-        assign(modelValue, justDoIt(command), envir=.GlobalEnv)
+ 	    doItAndPrint(paste(modelValue, "<-", command))
         if(prunePlot == "1") {
             logger(paste("plotcp(", modelValue, ")", sep=""))
             justDoIt(paste("plotcp(", modelValue, ")", sep=""))
             }
         if(prunePrint == "1") {
-#            doItAndPrint(paste("Printcp(", modelValue, ") # Pruning Table",
-#              sep=""))
             doItAndPrint(paste("printcp(", modelValue, ") # Pruning Table",
               sep=""))
         }
         if(treePrint == "1") {
-#            doItAndPrint(paste("Print(", modelValue, ") # Tree Leaf Summary",
-#              sep=""))
-#            doItAndPrint(paste("print(", modelValue, ") # Tree Leaf Summary",
-#              sep=""))
             doItAndPrint(paste(modelValue, " # Tree Leaf Summary", sep=""))
         }
         activeModel(modelValue)
@@ -1539,9 +1500,7 @@ stepwiseBCA <- function(){
             }
         command <- paste("step(", ActiveModel(), ", direction=", '"', searchDir, '"',
           ", k=", kVal, ")", sep="")
-        assign(modelValue, justDoIt(command), envir=.GlobalEnv)
-        logger(paste(modelValue, " <- ", command, sep=""))
-        doItAndPrint(command, log=FALSE)
+ 	    doItAndPrint(paste(modelValue, "<-", command))
         if(sumPrint=="1") {
             doItAndPrint(paste("summary(", modelValue, ")", sep=""))
             if(modelType == "glm") {

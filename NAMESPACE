@@ -1,3 +1,7 @@
-import(tcltk, Rcmdr, BCA)
+import(Rcmdr, BCA)
+
+importFrom(tcltk, tkfont.create, ttkprogressbar, tkwidget, setTkProgressBar)
+
 exportPattern("^[^\\.]")
+
 

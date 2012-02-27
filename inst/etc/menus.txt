@@ -1,6 +1,6 @@
 # RcmdrPlugin.BCA altered R Commander menus
 
-# last modified: 06Feb12 by Dan Putler
+# last modified: 03Feb13 by Dan Putler
 
 #   type    menu/item      operation/parent  label                              command/menu                activation    install?
 # Remove all the current Statistics related menus
@@ -249,7 +249,7 @@
   remove saveDataSet         ""              ""                                 ""                          ""            ""
   remove exportDataSet       ""              ""                                 ""                          ""            ""
   remove activeMenu          ""              ""                                 ""                          ""            ""
-  remove Recode              ""              ""                                 ""                          ""            ""
+  remove RecodeDialog        ""              ""                                 ""                          ""            ""
   remove Compute             ""              ""                                 ""                          ""            ""
   remove addObsNumbers       ""              ""                                 ""                          ""            ""
   remove standardize         ""              ""                                 ""                          ""            ""
@@ -304,7 +304,7 @@
   item   variablesMenu    command         "Reorder factor levels..."                 reorderFactor               "factorsP()"  ""
   item   variablesMenu    command         "Standardize variables..."                 standardize                 "numericP()"  ""
   item   variablesMenu    command         "Bin numeric variable..."                  binVariable                 "numericP()"  ""
-  item   variablesMenu    command         "Recode variables..."                      Recode                      "activeDataSetP()"  "packageAvailable('car')"
+  item   variablesMenu    command         "Recode variables..."                      RecodeDialog                "activeDataSetP()" "packageAvailable('car')"
   item   variablesMenu    command         "Reorder factor levels..."                 reorderFactor               "factorsP()"  ""
   item   variablesMenu    command         "Relabel factor levels..."                 relabelFactor               "factorsP()"  ""
   item   dataMenu         cascade         "Manipulate variables"                     variablesMenu               ""            ""
@@ -329,8 +329,10 @@
   item   visualizeMenu    command         "Plot of means..."                         PlotMeans                   "numericP() && factorsP()"   ""
   item   visualizeMenu    command         "Pie chart..."                             pieChart                    "factorsP()"   "packageAvailable('colorspace')"
   item   visualizeMenu    command         "Quantile-comparison plot..."              QQPlot                      "numericP()"   "packageAvailable('car')"
-  item   visualizeMenu    command         "Scatterplot..."                           scatterPlotBCA              "numericP(2)"  "packageAvailable('car')"
-  item   visualizeMenu    command         "Scatterplot matrix..."                    scatterPlotMatrixBCA        "numericP(3)"  "packageAvailable('car')"
+#  item   visualizeMenu    command         "Scatterplot..."                           scatterPlotBCA              "numericP(2)"  "packageAvailable('car')"
+#  item   visualizeMenu    command         "Scatterplot matrix..."                    scatterPlotMatrixBCA        "numericP(3)"  "packageAvailable('car')"
+  item   visualizeMenu    command         "Scatterplot..."                           scatterPlot                 "numericP(2)" "packageAvailable('car')"
+  item   visualizeMenu    command         "Scatterplot matrix..."                    scatterPlotMatrix           "numericP(3)" "packageAvailable('car')"
   item   visualizeMenu    command         "Boxplot..."                               boxPlot                     "numericP()"   ""
   item   visualizeMenu    command         "Stem-and-leaf display..."                 stemAndLeaf                 "numericP()"  "packageAvailable('aplpack')"
   item   visualizeMenu    command         "XY conditioning plot..."                  Xyplot                      "numericP(2)"  ""
