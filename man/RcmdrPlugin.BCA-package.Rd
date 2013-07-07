@@ -13,7 +13,7 @@ and Robert E. Krider.
 \details{
 Package:  RcmdrPlugin.BCA\cr
 Version:  0.9-5\cr
-Date:  2013/02/27\cr
+Date:  2013/02/18\cr
 Depends: R (>= 2.15.2), BCA, car\cr
 Imports: Rcmdr (>= 1.9-4), tcltk\cr
 Suggests: bind, aplpack, clv (>- 2.0-15, effects (>= 1.0-7), foreign, grid, 

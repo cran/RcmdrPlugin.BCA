@@ -1,5 +1,19 @@
-# Created on 26Sep10 by Dan Putler
-# Last modified on 28Feb13 by Dan Putler
+# Created on 26Sep2010 by Dan Putler
+# Last modified on 13Jul2013 by Dan Putler
+
+# Create global variables for dialog items to avoid Notes: in R check.
+if (getRversion() >= "2.15.1")  
+    globalVariables(c('.grab.focus', 'boxplotsVariable', 'buttonsFrame',
+	'criteriaFrame', 'criteriaVariable', 'diagonalFrame', 'diagonalVariable',
+	'directionVariable', 'distanceTypeFrame', 'distanceTypeVariable', 
+	'entry1', 'formulaFrame', 'generalizedLinearModel', 'GenerializedLinearModel',
+	'groupsFrame', 'hclustSummary', 'hierarchicalCluster', 'identifyVariable',
+	'jitterXVariable', 'jitterYVariable', 'kmeansClustering', 'leafVariable',
+	'lhsEntry', 'lhsVariable', 'logXVariable', 'logYVariable', 'lsLineVariable',
+	'methodFrame', 'methodVariable', 'onHelp', 'optionsFrame', 'outerOperatorsFrame',
+	'psprintf', 'relableFactor', 'rhsVariable', 'scatterPlot', 'scatterPlotMatrix',
+	'smoothLineVariable', 'spreadVariable', 'subButtonsFrame', 'subdialog',
+	'subsetFrame', 'subsetVariable', 'top', 'typeFrame', 'typeVariable', 'xBox'))
 
 # .onAttach function to place .subset, .targetLevel, and .trueResp into the
 # Rcmdr environment. Hopefully this works. This is done to deal with R2.14.0
@@ -18,6 +32,7 @@
         Commander()
         }
     palette(c("#0072B2","#D55E00","#000000","#F0E442","#2B9F78","#E69F00","#5684E9","#CC79A7"))
+	invisible(dev.off())
     }
 
 # The subsetBox with the subset expression as an Rcmdr environment variable
@@ -75,6 +90,7 @@ importDBF <- function() {
             }
         factor <- tclvalue(asFactor) == "1"
         command <- paste('read.dbf("', file,'", as.is=', factor,')', sep="")
+		## The command below is not for this case, but it the way to avoid the use of an assign() call to .GlobalEnv
  	    doItAndPrint(paste(dsnameValue, "<-", command))
 		activeDataSet(dsnameValue)
         tkfocus(CommanderWindow())
@@ -107,6 +123,7 @@ exportDBF <- function() {
 
 # DATA MENU
 createSamples <- function(){
+	.activeDataSet <- ActiveDataSet()
     initializeDialog(title=gettextRcmdr("Create Samples"))
     optionsFrame <- tkframe(top)
     estPercent <- tclVar("34")
@@ -163,6 +180,7 @@ variableSummary <- function() {
     }
 
 relabelFactor <- function(){
+	.activeDataSet <- ActiveDataSet()
     initializeDialog(title=gettextRcmdr("Relabel a Factor"))
     variableBox <- variableListBox(top, Factors(), title=gettextRcmdr("Factor (pick one)"))
     factorName <- tclVar(gettextRcmdr("<same as original>"))
@@ -198,7 +216,7 @@ relabelFactor <- function(){
         nvalues <- length(old.labels)
         if (nvalues > 30) {
             errorCondition(recall=relabelFactor,
-                message=psprintf(gettextRcmdr("Number of levels (%d) too large."),
+                message=psprintf(gettextRcmdr("Number of levels (%d) is too large."),
                 nvalues))
             return()
             }
@@ -251,6 +269,7 @@ relabelFactor <- function(){
 # This function needs to be worked on. It currently does things that the R
 # kmeans function already does
 kmeansClusteringBCA <- function(){
+	.activeDataSet <- ActiveDataSet()
     initializeDialog(title=gettextRcmdr("KMeans Clustering"))
     dataFrame <- tkframe(top)
     xBox <- variableListBox(dataFrame, Numeric(), selectmode="multiple",
@@ -415,6 +434,7 @@ kmeansClusteringBCA <- function(){
 
 # The SD Index plot functions for k-means
 SDIndexPlot <- function(){
+	.activeDataSet <- ActiveDataSet()
     initializeDialog(title=gettextRcmdr("SD Index Plot"))
     dataFrame <- tkframe(top)
     xBox <- variableListBox(dataFrame, Numeric(), selectmode="multiple",
@@ -486,6 +506,7 @@ SDIndexPlot <- function(){
 
 # K-Centroids Clustering
 kcentroidsClustering <- function(){
+	.activeDataSet <- ActiveDataSet()
     initializeDialog(title=gettextRcmdr("K-Centroids Clustering"))
     dataFrame <- tkframe(top)
     xBox <- variableListBox(dataFrame, Numeric(), selectmode="multiple",
@@ -678,7 +699,7 @@ bootDiagnostics <- function(){
     seedNumber <- tclVar("3")
     seedNumSlider <- tkscale(optionsFrame, from=1, to=5, showvalue=TRUE,
       variable=seedNumber, resolution=1, orient="horizontal")
-    .activeDataset <- ActiveDataSet()
+    .activeDataSet <- ActiveDataSet()
      onOK <- function(){
         x <- getSelection(xBox)
         nvar <- length(x)
@@ -1153,7 +1174,7 @@ nnetModel <- function(){
     require("nnet")
     initializeDialog(title=gettextRcmdr("Neural Network Model"))
     .activeModel <- ActiveModel()
-#    .activeDataSet <- ActiveDataSet()
+    .activeDataSet <- ActiveDataSet()
     currentModel <- if (!is.null(.activeModel))
         class(get(.activeModel, envir=.GlobalEnv))[1] == "nnet.formula"
 #        eval(parse(text=paste("class(", .activeModel, ")[1] == 'nnet.formula'",
@@ -1367,16 +1388,30 @@ rpartModel <- function(){
         prunePlot <- tclvalue(plotPrune)
         command <- paste("rpart(", formula, ", data=", .activeDataSet, 
           ", cp=" , complexPar, subset,")", sep="")
+#        if(subset=="") {
+#            command <- paste("rpart(", formula, ", data=", .activeDataSet, 
+#              ", cp=" , complexPar, ")", sep="")
+#            }
+#        else {
+#            command <- paste("rpart(", formula, ", data=", .activeDataSet, 
+#              subset, ", cp=" , complexPar, ")", sep="")
+#            }
  	    doItAndPrint(paste(modelValue, "<-", command))
         if(prunePlot == "1") {
             logger(paste("plotcp(", modelValue, ")", sep=""))
             justDoIt(paste("plotcp(", modelValue, ")", sep=""))
             }
         if(prunePrint == "1") {
+#            doItAndPrint(paste("Printcp(", modelValue, ") # Pruning Table",
+#              sep=""))
             doItAndPrint(paste("printcp(", modelValue, ") # Pruning Table",
               sep=""))
         }
         if(treePrint == "1") {
+#            doItAndPrint(paste("Print(", modelValue, ") # Tree Leaf Summary",
+#              sep=""))
+#            doItAndPrint(paste("print(", modelValue, ") # Tree Leaf Summary",
+#              sep=""))
             doItAndPrint(paste(modelValue, " # Tree Leaf Summary", sep=""))
         }
         activeModel(modelValue)
