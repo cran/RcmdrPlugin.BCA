@@ -1,5 +1,5 @@
 # Created on 26Sep2010 by Dan Putler
-# Last modified on 13Jul2013 by Dan Putler
+# Last modified on 02Dec2013 by Dan Putler
 
 # Create global variables for dialog items to avoid Notes: in R check.
 if (getRversion() >= "2.15.1")  
@@ -954,8 +954,9 @@ hclustSummaryBCA <- function(){
         if (clusterSummary == "1") {
             doItAndPrint(paste("summary(as.factor(", clusterVar,
               ")) # Cluster Sizes", sep=""))
+			#centroidsCommand <- paste("apply(", xmat, ", 2, function(x) tapply(x, as.factor(", clusterVar, "), mean)) # Cluster Centroids", sep = "")
             centroidsCommand <- paste("by(", xmat, ", as.factor(", clusterVar,
-              "), mean) # Cluster Centroids", sep="")
+              "), colMeans) # Cluster Centroids", sep="")
             doItAndPrint(centroidsCommand)
             }
 	if((clsPlot2d=="1" | clsPlot3d=="1") & ptsPlot=="0" & cntPlot=="0") {
@@ -1564,7 +1565,7 @@ stepwiseBCA <- function(){
 liftChart <- function() {
     require("nnet")
     require("rpart")
-    require("BCA")
+    #require("BCA")
 	dataSets <- listDataSets()
     parseDataSetGlm <- function(x) {
         y <- eval(parse(text=paste(x, "$call", sep="")))
@@ -1729,7 +1730,7 @@ liftChartP <- function() {
 rankScoreGUI <- function() {
     require("nnet")
     require("rpart")
-    require("BCA")
+    #require("BCA")
     parseDataSetGlm <- function(x) {
         y <- eval(parse(text=paste(x, "$call", sep="")))
         out <- unlist(strsplit(as.character(y), "="))[4]
@@ -1816,7 +1817,7 @@ rankScoreGUI <- function() {
 rawProbScoreGUI <- function() {
     require("nnet")
     require("rpart")
-    require("BCA")
+    #require("BCA")
     parseDataSetGlm <- function(x) {
         y <- eval(parse(text=paste(x, "$call", sep="")))
         out <- unlist(strsplit(as.character(y), "="))[4]
@@ -1903,7 +1904,7 @@ rawProbScoreGUI <- function() {
 adjProbScoreGUI <- function() {
     require("nnet")
     require("rpart")
-    require("BCA")
+    #require("BCA")
     parseDataSetGlm <- function(x) {
         y <- eval(parse(text=paste(x, "$call", sep="")))
         out <- unlist(strsplit(as.character(y), "="))[4]
@@ -2020,7 +2021,7 @@ helpAboutBCA <- function() {
 # of loess.threshold parameter to 2 from the default of 5. This allows for the
 # plotting of discrete variables.
 scatterPlotBCA <- function () {
-	require("car")
+	#require("car")
 	defaults <- list(initial.x = NULL, initial.y = NULL, initial.jitterx = 0, initial.jittery = 0, 
 			initial.logstringx = 0, initial.logstringy = 0, initial.log = 0, initial.box = 1, 
 			initial.line = 1, initial.smooth = 1, initial.spread = 1, initial.span = 50,
@@ -2234,7 +2235,7 @@ scatterPlotBCA <- function () {
 }
 
 scatterPlotMatrixBCA <- function () {
-	require("car")
+	#require("car")
 	defaults <- list(initial.variables = NULL, initial.line = 1, initial.smooth = 1, initial.spread = 0, 
 			initial.span = 50, initial.diag = "density", initial.subset = gettextRcmdr ("<all valid cases>"),
 			initialGroup=NULL, initial.lines.by.group=1) 

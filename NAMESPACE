@@ -1,4 +1,4 @@
-import(Rcmdr, BCA)
+import(Rcmdr, BCA, car)
 
 importFrom(tcltk, tkfont.create, ttkprogressbar, tkwidget, setTkProgressBar)
 
