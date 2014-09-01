@@ -1,7 +1,6 @@
 # Created on 26Sep2010 by Dan Putler
-# Last modified on 02Dec2013 by Dan Putler
+# Last modified on 02Sep2014 by Dan Putler
 
-# Create global variables for dialog items to avoid Notes: in R check.
 if (getRversion() >= "2.15.1")  
     globalVariables(c('.grab.focus', 'boxplotsVariable', 'buttonsFrame',
 	'criteriaFrame', 'criteriaVariable', 'diagonalFrame', 'diagonalVariable',
@@ -57,7 +56,6 @@ subsetBoxBCA <- defmacro(window=top, model=FALSE,
 # DBF IMPORT/EXPORT FUNCTIONS. The data input options should expand to
 # allow for other DBMS options
 importDBF <- function() {
-    require("foreign")
     initializeDialog(title=gettextRcmdr("Import dBase (dbf) Data Set"))
     dsname <- tclVar(gettextRcmdr("Dataset"))
     entryDsname <- tkentry(top, width="20", textvariable=dsname)
@@ -106,7 +104,6 @@ importDBF <- function() {
     } 
 
 exportDBF <- function() {
-    require("foreign")
     dsname <- activeDataSet()
     saveFile <- tclvalue(tkgetSaveFile(filetypes=gettextRcmdr('{"DBF Files" {".dbf" ".DBF"}} {"All Files" {"*"}}'),
       defaultextension="dbf", initialfile=paste(dsname, ".dbf", sep="")))
@@ -379,15 +376,19 @@ kmeansClusteringBCA <- function(){
            logger(plotCmd2d)
            }
         if (clsPlot3d == "1") {
-            plotCmd3d <- paste("bpCent3d(prcomp(", xmat, 
-              "), .cluster$cluster, data.pts = ", ptsOpt, ", centroids = ",
-	      cntOpt, ", xlabs = as.character(.cluster$cluster))", sep="")
-           justDoIt(plotCmd3d)
-           logger(plotCmd3d)
-          .Tcl("update")
-           activateMenus()
-           rgl.bringtotop()
-           }
+			if (requireNamespace("rgl", quietly = TRUE)) {
+				plotCmd3d <- paste("bpCent3d(prcomp(", xmat, 
+				"), .cluster$cluster, data.pts = ", ptsOpt, ", centroids = ",
+				cntOpt, ", xlabs = as.character(.cluster$cluster))", sep="")
+				justDoIt(plotCmd3d)
+				logger(plotCmd3d)
+				.Tcl("update")
+				activateMenus()
+				rgl::rgl.bringtotop()
+			} else {
+				warning("The rgl package is not available so a three dimensional bi-plot was not created")
+			}
+		}
         if (clusterAssign == "1") {
             assignCommand <- paste(.activeDataSet, "$", clusterVariable,
               " <- assignCluster(", xmat, ", ", .activeDataSet,
@@ -628,7 +629,7 @@ kcentroidsClustering <- function(){
            logger(plotCmd3d)
            .Tcl("update")
            activateMenus()
-           rgl.bringtotop()
+           rgl::rgl.bringtotop()
            }
         if (clusterAssign == "1") {
 #            assignCommand <- paste(.activeDataSet, "$", clusterVariable,
@@ -982,7 +983,7 @@ hclustSummaryBCA <- function(){
            logger(plotCmd3d)
           .Tcl("update")
            activateMenus()
-           rgl.bringtotop()
+           rgl::rgl.bringtotop()
            }
         activateMenus()
         tkfocus(CommanderWindow())
@@ -1172,7 +1173,6 @@ activeRpartP <- function() activeModelP() && eval(parse(text=paste("class(",
 
 # The neural network functions
 nnetModel <- function(){
-    require("nnet")
     initializeDialog(title=gettextRcmdr("Neural Network Model"))
     .activeModel <- ActiveModel()
     .activeDataSet <- ActiveDataSet()
@@ -1302,7 +1302,6 @@ nnetModel <- function(){
 
 # The rpart functions
 rpartModel <- function(){
-    require("rpart")
     initializeDialog(title=gettextRcmdr("rpart Tree"))
     .activeModel <- ActiveModel()
     .activeDataSet <- ActiveDataSet()
@@ -1440,8 +1439,6 @@ rpartModel <- function(){
     }
 
 rpartPlot <- function(){
-    require("rpart")
-    require("rpart.plot")
     rpartMod <- ActiveModel()
     initializeDialog(title=gettextRcmdr("Plot an rpart Tree"))
     leafFrame <- tkframe(top)
@@ -1563,9 +1560,6 @@ stepwiseBCA <- function(){
 
 ## Lift charts and scoring
 liftChart <- function() {
-    require("nnet")
-    require("rpart")
-    #require("BCA")
 	dataSets <- listDataSets()
     parseDataSetGlm <- function(x) {
         y <- eval(parse(text=paste(x, "$call", sep="")))
@@ -1728,9 +1722,6 @@ liftChartP <- function() {
     }
 
 rankScoreGUI <- function() {
-    require("nnet")
-    require("rpart")
-    #require("BCA")
     parseDataSetGlm <- function(x) {
         y <- eval(parse(text=paste(x, "$call", sep="")))
         out <- unlist(strsplit(as.character(y), "="))[4]
@@ -1815,9 +1806,6 @@ rankScoreGUI <- function() {
     }
 
 rawProbScoreGUI <- function() {
-    require("nnet")
-    require("rpart")
-    #require("BCA")
     parseDataSetGlm <- function(x) {
         y <- eval(parse(text=paste(x, "$call", sep="")))
         out <- unlist(strsplit(as.character(y), "="))[4]
@@ -1902,9 +1890,6 @@ rawProbScoreGUI <- function() {
     }
 
 adjProbScoreGUI <- function() {
-    require("nnet")
-    require("rpart")
-    #require("BCA")
     parseDataSetGlm <- function(x) {
         y <- eval(parse(text=paste(x, "$call", sep="")))
         out <- unlist(strsplit(as.character(y), "="))[4]
@@ -2013,7 +1998,7 @@ is.equality.prob <- function(subset) {
 
 # The "about" page for the plug-in
 helpAboutBCA <- function() {
-	if (as.numeric(R.Version()$major) >= 2) print(help("RcmdrPlugin.BCA"))
+	if (as.numeric(R.Version()$major) >= 3) print(help("RcmdrPlugin.BCA"))
 	else help("RcmdrPlugin.BCA")
 }
 
@@ -2021,7 +2006,6 @@ helpAboutBCA <- function() {
 # of loess.threshold parameter to 2 from the default of 5. This allows for the
 # plotting of discrete variables.
 scatterPlotBCA <- function () {
-	#require("car")
 	defaults <- list(initial.x = NULL, initial.y = NULL, initial.jitterx = 0, initial.jittery = 0, 
 			initial.logstringx = 0, initial.logstringy = 0, initial.log = 0, initial.box = 1, 
 			initial.line = 1, initial.smooth = 1, initial.spread = 1, initial.span = 50,
@@ -2235,7 +2219,6 @@ scatterPlotBCA <- function () {
 }
 
 scatterPlotMatrixBCA <- function () {
-	#require("car")
 	defaults <- list(initial.variables = NULL, initial.line = 1, initial.smooth = 1, initial.spread = 0, 
 			initial.span = 50, initial.diag = "density", initial.subset = gettextRcmdr ("<all valid cases>"),
 			initialGroup=NULL, initial.lines.by.group=1) 
@@ -2318,3 +2301,85 @@ scatterPlotMatrixBCA <- function () {
 	dialogSuffix(rows = 6, columns = 2)
 }
 
+## Added as a workaround for R CMD check --as-cran to allow for an *.RD file
+## example that would allow the package to not issue a warning for "No examples,
+## no tests, no vignette"
+# The neural network functions
+nnSub <- function(data, subset) {
+    rowInd <- 1:nrow(data)
+    if(length(unlist(strsplit(subset, "=="))) == 2) {
+        compType <- "Equal"
+        subSplit <- unlist(strsplit(subset, "=="))
+        subVar <- trim.blanks(subSplit[1])
+        subVal <- eval(parse(text=trim.blanks(subSplit[2])))
+        }
+    else if(length(unlist(strsplit(subset, "!="))) == 2) {
+        compType <- "NotEqual"
+        subSplit <- unlist(strsplit(subset, "!="))
+        subVar <- trim.blanks(subSplit[1])
+        subVal <- eval(parse(text=trim.blanks(subSplit[2])))
+        }
+    else if(length(unlist(strsplit(subset, ">="))) == 2) {
+        compType <- "GrtrEqual"
+        subSplit <- unlist(strsplit(subset, ">="))
+        subVar <- trim.blanks(subSplit[1])
+        subVal <- eval(parse(text=trim.blanks(subSplit[2])))
+        }
+    else if(length(unlist(strsplit(subset, "<="))) == 2) {
+        compType <- "LessEqual"
+        subSplit <- unlist(strsplit(subset, "<="))
+        subVar <- trim.blanks(subSplit[1])
+        subVal <- eval(parse(text=trim.blanks(subSplit[2])))
+        }
+    else if(length(unlist(strsplit(subset, ">"))) == 2) {
+        compType <- "Grtr"
+        subSplit <- unlist(strsplit(subset, ">"))
+        subVar <- trim.blanks(subSplit[1])
+        subVal <- eval(parse(text=trim.blanks(subSplit[2])))
+        }
+    else if(length(unlist(strsplit(subset, "<"))) == 2) {
+        compType <- "Less"
+        subSplit <- unlist(strsplit(subset, "<"))
+        subVar <- trim.blanks(subSplit[1])
+        subVal <- eval(parse(text=trim.blanks(subSplit[2])))
+        }
+    else stop("No appropriate comparison operator was found.")
+    subSet <- data[[subVar]]
+    if(compType=="Equal") rowInd <- rowInd[subSet==subVal]
+    else if(compType=="NotEqual") rowInd <- rowInd[subSet!=subVal]
+    else if(compType=="GrtrEqual") rowInd <- rowInd[subSet>=subVal]
+    else if(compType=="LessEqual") rowInd <- rowInd[subSet<=subVal]
+    else if(compType=="Grtr") rowInd <- rowInd[subSet>subVal]
+    else rowInd <- rowInd[subSet<subVal]
+    rowInd <- rowInd[!is.na(rowInd)]
+    return(rowInd)
+    }
+
+Nnet <- function (formula, data, decay, size, subset="") {
+    set.seed(1)
+    if(subset=="") {
+        nnetObj <- nnet(formula=formula, data=data, decay=decay, size=size,
+          maxit=400)
+        for(i in 2:10) {
+            set.seed(i)
+            newNnet <- nnet(formula=formula, data=data, decay=decay, size=size,
+              maxit=400)
+            if(newNnet$value < nnetObj$value) nnetObj <- newNnet
+            }
+        }
+    else {
+        selectRow <- nnSub(data, subset)
+        nData <- data[selectRow,]
+        nnetObj <- nnet(formula=formula, data=nData, decay=decay, size=size,
+          maxit=400)
+        for(i in 2:10) {
+            set.seed(i)
+            newNnet <- nnet(formula=formula, data=nData, decay=decay, size=size,
+              maxit=400)
+            if(newNnet$value < nnetObj$value) nnetObj <- newNnet
+            }
+        }
+    nnetObj$call <- call("Nnet", formula=formula, data=substitute(data), decay=decay,
+      size=size, subset=subset)
+    return(nnetObj)
+    }

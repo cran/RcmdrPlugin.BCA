@@ -1,7 +1,8 @@
-de55bc9fa2d1517d7ecfc2c1b2fb0b91 *DESCRIPTION
-6a13c593ebf06cafac3a92bad9026e11 *NAMESPACE
-14a8ff39b7b731b0b6ea7acd83fd88cf *R/RcmdrPlugin.BCA.R
-971fb97cbbe48c74b3f683591851d588 *inst/CHANGES
+1125455f585e3660a0b1cf7f3769bd3f *DESCRIPTION
+d6bd0eb3f85951d486d09cbcca419dab *NAMESPACE
+ebffc06898fa876449ed0c3cffac2ad9 *R/RcmdrPlugin.BCA.R
+9a95e644c64f6637af011f5565c24775 *inst/CHANGES
 61fba199f4c0d11170721593f7622e15 *inst/etc/menus.txt
-186e3babf90c9a70408c0f20b79e6b80 *man/RcmdrPlugin.BCA-package.Rd
+241bef34096c8dabb54e8577d1701963 *man/Nnet.Rd
+058dec47e6bf7365f5fa6849d2677821 *man/RcmdrPlugin.BCA-package.Rd
 ba3d94e84022b2c130272aa6cb630751 *man/RcmdrPlugin.BCA.Utilities.Rd

@@ -1,7 +1,6 @@
-import(Rcmdr, BCA, car)
+import(RcmdrMisc, Rcmdr, BCA, car, rpart, nnet, flexclust)
 
-importFrom(tcltk, tkfont.create, ttkprogressbar, tkwidget, setTkProgressBar)
+importFrom(rpart.plot, rpart.plot)
+importFrom(foreign, read.dbf, write.dbf)
 
 exportPattern("^[^\\.]")
-
-
